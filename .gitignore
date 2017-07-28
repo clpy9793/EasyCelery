@@ -1,2 +1,4 @@
 
 *.pyc
+
+async_task/celerybeat-schedule
