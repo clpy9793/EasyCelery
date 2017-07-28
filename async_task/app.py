@@ -13,21 +13,27 @@ from celery.schedules import crontab
 
 
 # app = Celery('app', broker='pyamqp://localhost', backend='redis://localhost')
+tasks = ['task', 'circle_task']
+app = Celery('app', broker='pyamqp://localhost', backend='redis://localhost',include=tasks)
 
-app = Celery('app', 
-            broker='pyamqp://localhost', 
-            backend='redis://localhost',
-            include=['task', 'circle_task'])            
-
-
+# circle_server
 circle_beat_schedule = {
     'circle_every_day': {
         'task': 'circle_task.close_unsolved_questions',
-        'schedule': 1,
+        'schedule': crontab(hour=8),
+        'args': (),
+    },
+    'circle_every_day': {
+        'task': 'circle_task.on_push_recommend_post_on_morning',
+        'schedule': crontab(hour=7),
+        'args': (),
+    },
+    'circle_every_day': {
+        'task': 'circle_task.on_push_recommend_post_on_evening',
+        'schedule': crontab(hour=21),
         'args': (),
     },    
 }
-
 
 app.conf.beat_schedule.update(circle_beat_schedule)
 
